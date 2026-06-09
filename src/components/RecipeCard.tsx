@@ -1,5 +1,7 @@
-import { Recipe } from "@/types/recipe";
+import Image from "next/image";
 import Link from "next/link";
+
+import { Recipe } from "@/types/recipe";
 
 interface RecipeCardProps {
     recipe: Recipe;
@@ -10,11 +12,13 @@ export default function RecipeCard({
 }: RecipeCardProps) {
     return (
         <Link href={`/recipes/${recipe.idMeal}`}>
-            <article className="rounded-lg border bg-white p-4 shadow-sm transition-shadow hover:shadow-lg">
-                <img
+            <article className="rounded-lg border bg-white p-4 shadow-sm transition hover:shadow-lg">
+                <Image
                     src={recipe.strMealThumb}
                     alt={recipe.strMeal}
-                    className="mb-4 h-52 w-full rounded-md object-cover"
+                    width={500}
+                    height={300}
+                    className="mb-4 rounded-lg"
                 />
 
                 <h2 className="text-gray-900 text-xl font-semibold">
