@@ -40,3 +40,19 @@ export async function getRecipeById(
 
     return data.meals?.[0] ?? null;
 }
+
+export async function searchRecipes(
+    query: string
+) {
+    if (!query) {
+        return [];
+    }
+
+    const response = await fetch(
+        `https://www.themealdb.com/api/json/v1/1/search.php?s=${query}`
+    );
+
+    const data = await response.json();
+
+    return data.meals ?? [];
+}
