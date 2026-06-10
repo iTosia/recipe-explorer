@@ -31,3 +31,15 @@ export async function getRecipeById(
 
     return data.meals?.[0] ?? null;
 }
+
+export async function getRecipesByIds(
+    ids: string[]
+) {
+    const recipes = await Promise.all(
+        ids.map((id) => getRecipeById(id))
+    );
+
+    return recipes.filter(
+        Boolean
+    ) as RecipeDetails[];
+}

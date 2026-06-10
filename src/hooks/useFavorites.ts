@@ -8,38 +8,32 @@ export function useFavorites() {
     const [favorites, setFavorites] = useState<string[]>([]);
 
     useEffect(() => {
-        const stored = localStorage.getItem(STORAGE_KEY);
+        const data = localStorage.getItem(STORAGE_KEY);
 
-        if (stored) {
-            setFavorites(JSON.parse(stored));
+        if (data) {
+            setFavorites(
+                JSON.parse(data)
+            );
         }
     }, []);
 
     useEffect(() => {
-        localStorage.setItem(
-            STORAGE_KEY,
-            JSON.stringify(favorites)
-        );
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
     }, [favorites]);
 
-    const toggleFavorite = useCallback(
-        (id: string) => {
+    const toggleFavorite =
+        useCallback((id: string) => {
             setFavorites((prev) =>
                 prev.includes(id)
                     ? prev.filter(
-                        (item) =>
-                            item !== id
-                    )
+                          (item) =>
+                              item !== id
+                      )
                     : [...prev, id]
             );
-        },
-        []
-    );
+        }, []);
 
-    const isFavorite = useCallback(
-        (id: string) => favorites.includes(id),
-        [favorites]
-    );
+    const isFavorite = useCallback((id: string) => favorites.includes(id), [favorites]);
 
     return {
         favorites,
