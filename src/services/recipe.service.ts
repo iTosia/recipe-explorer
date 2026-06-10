@@ -1,7 +1,6 @@
 import { Recipe, RecipeDetails, RecipesResponse, RecipeDetailsResponse } from "@/types/recipe";
 
-const API_URL =
-    "https://www.themealdb.com/api/json/v1/1/search.php?f=a";
+const API_URL = "https://www.themealdb.com/api/json/v1/1/search.php?f=a";
 
 export async function getRecipes(): Promise<Recipe[]> {
     const response = await fetch(API_URL, {

@@ -1,30 +1,34 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import FavoriteButton from "@/components/FavoriteButton";
+
 import { Recipe } from "@/types/recipe";
 
-interface RecipeCardProps {
+interface Props {
     recipe: Recipe;
 }
 
 export default function RecipeCard({
     recipe,
-}: RecipeCardProps) {
+}: Props) {
     return (
-        <Link href={`/recipes/${recipe.idMeal}`}>
-            <article className="rounded-lg border bg-white p-4 shadow-sm transition hover:shadow-lg">
+        <article className="rounded-lg border bg-white p-4 shadow-sm">
+            <Link href={`/recipes/${recipe.idMeal}`}>
                 <Image
                     src={recipe.strMealThumb}
                     alt={recipe.strMeal}
                     width={500}
                     height={300}
-                    className="mb-4 rounded-lg"
+                    className="rounded-lg"
                 />
 
-                <h2 className="text-gray-900 text-xl font-semibold">
+                <h2 className="mt-4 text-xl font-semibold">
                     {recipe.strMeal}
                 </h2>
-            </article>
-        </Link>
+            </Link>
+
+            <FavoriteButton recipeId={recipe.idMeal} />
+        </article>
     );
 }
