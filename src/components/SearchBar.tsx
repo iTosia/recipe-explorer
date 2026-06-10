@@ -1,40 +1,64 @@
 "use client";
 
-import {
-    useRouter,
-    useSearchParams,
-} from "next/navigation";
-
-import { useState } from "react";
-import { useDebounce } from "@/hooks/useDebounce";
-import { useEffect } from "react";
+import { useEffect, useTransition } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { searchSchema, SearchSchema } from "@/schemas/search.schema";
 
 export default function SearchBar() {
     const router = useRouter();
+
     const searchParams = useSearchParams();
+
+    const [isPending, startTransition] = useTransition();
+
     const currentSearch = searchParams.get("search") ?? "";
-    const [value, setValue] = useState(currentSearch);
-    const debounced = useDebounce(value);
+
+    const { register, watch, setValue } = useForm<SearchSchema>({
+        resolver: zodResolver(searchSchema),
+        defaultValues: {
+            search: currentSearch,
+        },
+    });
+
+    const value = watch("search");
 
     useEffect(() => {
+        const timeout = setTimeout(() => {
+            startTransition(() => {
+                if (!value) {
+                    router.replace("/");
+                    return;
+                }
 
-        if (!debounced) {
-            router.push("/");
-            return;
-        }
+                router.replace(`/?search=${encodeURIComponent(value)}`);
+            });
+        }, 500);
 
-        router.replace(`/?search=${debounced}`);
+        return () => clearTimeout(timeout);
+    }, [value, router]);
 
-    }, [debounced, router]);
+    useEffect(() => {
+        setValue(
+            "search",
+            currentSearch
+        );
+    }, [currentSearch, setValue]);
 
     return (
-        <input
-            value={value}
-            onChange={(e) =>
-                setValue(e.target.value)
-            }
-            placeholder="Search..."
-            className="w-full rounded-lg border p-4"
-        />
+        <div className="space-y-2">
+            <input
+                {...register("search")}
+                placeholder="Search recipes..."
+                className="w-full rounded-lg border p-4"
+            />
+
+            {isPending && (
+                <p className="text-sm text-gray-500">
+                    Searching...
+                </p>
+            )}
+        </div>
     );
 }

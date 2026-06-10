@@ -15,20 +15,26 @@ export function useFavorites() {
         }
     }, []);
 
-    const toggleFavorite = useCallback((id: string) => {
-        setFavorites((prev) => {
-            const updated = prev.includes(id)
-                ? prev.filter((item) => item !== id)
-                : [...prev, id];
+    useEffect(() => {
+        localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify(favorites)
+        );
+    }, [favorites]);
 
-            localStorage.setItem(
-                STORAGE_KEY,
-                JSON.stringify(updated)
+    const toggleFavorite = useCallback(
+        (id: string) => {
+            setFavorites((prev) =>
+                prev.includes(id)
+                    ? prev.filter(
+                        (item) =>
+                            item !== id
+                    )
+                    : [...prev, id]
             );
-
-            return updated;
-        });
-    }, []);
+        },
+        []
+    );
 
     const isFavorite = useCallback(
         (id: string) => favorites.includes(id),
