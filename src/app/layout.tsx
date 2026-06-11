@@ -3,6 +3,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import QueryProvider from "@/providers/QueryProvider";
 
 export const metadata: Metadata = {
     title: "Recipe Explorer",
@@ -21,7 +22,9 @@ export default function RootLayout({
                     <Header />
 
                     <main className="mx-auto w-full max-w-7xl flex-1 px-6 py-8">
-                        {children}
+                        <QueryProvider>
+                            {children}
+                        </QueryProvider>
                     </main>
 
                     <Footer />
