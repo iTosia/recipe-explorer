@@ -1,11 +1,11 @@
+import { HttpError } from "./http-error";
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiFetch<T>(
     endpoint: string
 ): Promise<T> {
-    const response = await fetch(
-        `${API_URL}${endpoint}`,
-        {
+    const response = await fetch(`${API_URL}${endpoint}`, {
             next: {
                 revalidate: 3600,
             },
@@ -13,7 +13,10 @@ export async function apiFetch<T>(
     );
 
     if (!response.ok) {
-        throw new Error("API Error");
+        throw new HttpError(
+            response.statusText,
+            response.status
+        );
     }
 
     return response.json();

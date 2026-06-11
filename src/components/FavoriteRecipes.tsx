@@ -6,33 +6,29 @@ import RecipeList from "./RecipeList";
 import SkeletonCard from "./SkeletonCard";
 import EmptyState from "./EmptyState";
 
-import { getRecipesByIds } from "@/services/recipe.service";
+import { clientFetch } from "@/lib/client-api";
 import { useFavorites } from "@/hooks/useFavorites";
-import { RecipeDetails } from "@/types/recipe";
+import { Recipe } from "@/types/recipe";
 
 export default function FavoriteRecipes() {
     const { favorites } = useFavorites();
-
-    const [recipes, setRecipes] = useState<
-        RecipeDetails[]
-    >([]);
-
-    const [loading, setLoading] =
-        useState(true);
+    const [recipes, setRecipes] = useState<Recipe[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function load() {
             if (!favorites.length) {
                 setRecipes([]);
                 setLoading(false);
-
                 return;
             }
 
-            const data =await getRecipesByIds(favorites);
-
-            setRecipes(data);
-            setLoading(false);
+            try {
+                const data = await Promise.all(favorites.map((id) => clientFetch<Recipe>(`/api/recipes/${id}`)));
+                setRecipes(data);
+            } finally {
+                setLoading(false);
+            }
         }
 
         load();
@@ -40,10 +36,14 @@ export default function FavoriteRecipes() {
 
     if (loading) {
         return (
-            <section className="grid grid-cols-3 gap-6">
-                <SkeletonCard />
-                <SkeletonCard />
-                <SkeletonCard />
+            <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+                {Array.from({ length: 6 }).map(
+                    (_, index) => (
+                        <SkeletonCard
+                            key={index}
+                        />
+                    )
+                )}
             </section>
         );
     }
@@ -55,8 +55,6 @@ export default function FavoriteRecipes() {
     }
 
     return (
-        <RecipeList
-            recipes={recipes}
-        />
+        <RecipeList recipes={recipes} />
     );
 }
