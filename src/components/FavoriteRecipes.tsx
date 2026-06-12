@@ -11,12 +11,14 @@ import { useFavorites } from "@/hooks/useFavorites";
 import { Recipe } from "@/types/recipe";
 
 export default function FavoriteRecipes() {
-    const { favorites } = useFavorites();
+    const { favorites, isInitialized } = useFavorites();
     const [recipes, setRecipes] = useState<Recipe[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         async function load() {
+            if (!isInitialized) return;
+
             if (!favorites.length) {
                 setRecipes([]);
                 setLoading(false);
@@ -32,9 +34,9 @@ export default function FavoriteRecipes() {
         }
 
         load();
-    }, [favorites]);
+    }, [favorites, isInitialized]);
 
-    if (loading) {
+    if (!isInitialized || loading) {
         return (
             <section className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
                 {Array.from({ length: 6 }).map(
