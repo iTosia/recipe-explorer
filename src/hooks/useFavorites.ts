@@ -5,17 +5,15 @@ import { useCallback, useEffect, useState } from "react";
 const STORAGE_KEY = "favoriteRecipes";
 
 export function useFavorites() {
-    const [favorites, setFavorites] = useState<string[]>([]);
+    const [favorites, setFavorites] = useState<string[]>(() => {
+        if (typeof window === "undefined") {
+            return [];
+        }
 
-    useEffect(() => {
         const data = localStorage.getItem(STORAGE_KEY);
 
-        if (data) {
-            setFavorites(
-                JSON.parse(data)
-            );
-        }
-    }, []);
+        return data ? JSON.parse(data) : [];
+    });
 
     useEffect(() => {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites));
