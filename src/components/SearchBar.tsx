@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useTransition } from "react";
+import { useEffect, useTransition, useDeferredValue } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -23,21 +23,18 @@ export default function SearchBar() {
     });
 
     const value = watch("search");
+    const deferredValue = useDeferredValue(value);
 
     useEffect(() => {
-        const timeout = setTimeout(() => {
-            startTransition(() => {
-                if (!value) {
-                    router.replace("/");
-                    return;
-                }
+        startTransition(() => {
+            if (!deferredValue) {
+                router.replace("/");
+                return;
+            }
 
-                router.replace(`/?search=${encodeURIComponent(value)}`);
-            });
-        }, 500);
-
-        return () => clearTimeout(timeout);
-    }, [value, router]);
+            router.replace(`/?search=${encodeURIComponent(deferredValue)}`);
+        });
+    }, [deferredValue, router]);
 
     useEffect(() => {
         setValue(
